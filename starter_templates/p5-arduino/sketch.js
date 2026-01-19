@@ -1,4 +1,4 @@
-let port; // do not remove or rename
+let port; // do not remove or rename port
 let serialData;
 
 function setup() {
@@ -15,6 +15,8 @@ function draw() {
     serialData = port.readUntil("\n");
     // Only log and use data that has information, not empty signals
     if (serialData[0]) {
+      // Remember to convert the serial data from string to number using float()
+      // Disable or remove console.log once verified working
       console.log(serialData);
     }
   }

@@ -21,10 +21,9 @@ Each week corresponds to a topic covered in class:
 | `week_07` | Local Tooling (Student Repo Template) |
 | `week_08` | Arduino Basics |
 | `week_09` | Sensor to Screen (Sensor Jam Template) |
+| `week_10` | Interface Design |
 
-Within each week, you’ll find folders for specific **activities**, **readings**, or **mini-projects** used during class.
-
-> ⚠️ Weeks 09–13 focus on Arduino, simple UIs, and final projects — materials will be added progressively.
+Within each week, you’ll find folders for specific **activities**, **readings**, or **mini-projects** used during class. For some weeks, you may find fully implemented **demos** for you to experiment with, dissect, and learn from.
 
 ---
 
@@ -33,10 +32,6 @@ Within each week, you’ll find folders for specific **activities**, **readings*
 Clean, ready-to-use project templates for your own sketches.
 
 - **p5-only/** → browser-based sketches
-
-  - `fixed-size/` : fixed canvas dimensions
-  - `window-size/` : responsive full-window canvas
-
 - **p5-arduino/** → templates that include serial communication setup between Arduino and p5.js
 
 Each folder includes its own `README.md` explaining how to use or modify the template.
@@ -50,7 +45,7 @@ Local copies of required p5.js libraries for offline use:
 - `p5.min.js`
 - `p5.sound.min.js`
 
-These are already linked in the starter templates.
+These are also included and linked within the starter templates.
 
 ---
 
@@ -98,7 +93,7 @@ Launch **Live Server** to preview sketches in your browser.
 
 - **Editor:** VS Code + Live Server
 - **Version Control:** GitHub Desktop
-- **Libraries:** p5.js, p5.sound
+- **Libraries:** p5.js, p5.sound, p5.webserial
 - **Physical Computing:** Arduino Uno (Weeks 8–9)
 - **AI Assistants:** ChatGPT, Claude, or GitHub Copilot (introduced mid-semester)
 
