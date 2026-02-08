@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>VibeSpek - Robot Interview</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ggwave@0.4.0/ggwave.js"></script>
+</head>
+
+<body>
+  <div id="controls">
+    <button id="speakButton" class="control-btn">Start Listening</button>
+    <select id="robotSelect" class="control-select">
+      <option value="A">Robot A (Sarcastic)</option>
+      <option value="B">Robot B (Kind)</option>
+    </select>
+  </div>
+  <div id="debugDisplay"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

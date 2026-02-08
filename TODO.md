@@ -1,0 +1,3 @@
+- [ ] create a separate interface/face for one robot
+- [ ] host the page, to allow robots to talk to each other
+- [ ] arduino head spin, the arduino gets api signal

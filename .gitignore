@@ -1,0 +1,29 @@
+# Environment and config files
+p5-only/config.js
+p5-arduino/config.js
+.env
+.env.local
+*.env
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Vite
+.vite/
+*.local
