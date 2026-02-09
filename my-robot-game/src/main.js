@@ -1,5 +1,5 @@
 import "./style.css";
-// p5 and ggwave are loaded globally via CDN in index.html
+// p5 is loaded globally via CDN in index.html
 
 // Configuration - import from environment variables
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || "";
@@ -17,7 +17,6 @@ const sketch = (s) => {
   let isSpeaking = false;
   let audioContext;
   let recognition;
-  let fft;
   let debugText = {
     userSpeech: "",
     robotResponse: "",
@@ -26,12 +25,6 @@ const sketch = (s) => {
   let conversationHistory = [];
   let speechSynthesis = window.speechSynthesis;
   let selectedRobotType = "A"; // A or B
-  let ggwaveInstance = null;
-  let analyserNode = null;
-  let isProcessingGGWave = false;
-  let ggwaveReady = false;
-  let audioBuffer = [];
-  let bufferSize = 4096;
 
   s.setup = () => {
     // Optimize canvas size for mobile landscape
@@ -45,10 +38,6 @@ const sketch = (s) => {
     // Create microphone input
     mic = new p5.AudioIn();
     mic.start();
-
-    // Create FFT for waveform analysis
-    fft = new p5.FFT(0.8, 1024);
-    fft.setInput(mic);
 
     // Create sound recorder
     recorder = new p5.SoundRecorder();
@@ -84,11 +73,6 @@ const sketch = (s) => {
 
     // Ensure audio context is started
     s.userStartAudio();
-
-    // Initialize ggwave after a short delay to ensure everything is ready
-    setTimeout(() => {
-      initGGWave();
-    }, 500);
 
     // Initialize speech recognition
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
@@ -127,7 +111,7 @@ const sketch = (s) => {
 
     // Update and render robot
     myRobot.update();
-    myRobot.render(fft);
+    myRobot.render();
   };
 
   s.windowResized = () => {
@@ -158,10 +142,6 @@ const sketch = (s) => {
     const robotName =
       selectedRobotType === "A" ? "Robot A (Sarcastic)" : "Robot B (Kind)";
 
-    const ggwaveStatus = ggwaveReady
-      ? "🔊 GGWave Active"
-      : "❌ GGWave Unavailable";
-
     let historyHTML = `<strong>${robotName} - Conversation:</strong><br>`;
     const recentHistory = conversationHistory.slice(-4);
     if (recentHistory.length > 0) {
@@ -175,7 +155,6 @@ const sketch = (s) => {
 
     debugDiv.html(`
       <strong>Last Input:</strong> ${userText}<br>
-      <strong>Status:</strong> ${ggwaveStatus}<br>
       ${historyHTML}
     `);
   }
@@ -197,8 +176,8 @@ const sketch = (s) => {
 
       // Blinking variables
       this.lastBlink = s.millis();
-      this.blinkInterval = s.random(2500, 4000);
-      this.blinkDuration = 200;
+      this.blinkInterval = s.random(2500, 4000); // Random blink interval
+      this.blinkDuration = 200; // Blink lasts 200ms
       this.isBlinking = false;
 
       // Sound wave variables
@@ -211,7 +190,7 @@ const sketch = (s) => {
     }
 
     updateFaceTexture() {
-      this.faceGraphics.clear();
+      this.faceGraphics.background(255);
       this.faceGraphics.fill(0);
       this.faceGraphics.textSize(64);
       this.faceGraphics.textAlign(s.CENTER, s.CENTER);
@@ -237,15 +216,17 @@ const sketch = (s) => {
       // Handle blinking
       const now = s.millis();
 
+      // Start blink
       if (now - this.lastBlink > this.blinkInterval && !this.isBlinking) {
         this.isBlinking = true;
         this.lastBlink = now;
         this.updateFaceForBlink();
       }
 
+      // End blink
       if (this.isBlinking && now - this.lastBlink > this.blinkDuration) {
         this.isBlinking = false;
-        this.blinkInterval = s.random(2500, 4000);
+        this.blinkInterval = s.random(2500, 4000); // Randomize next blink
         this.updateFaceForBlink();
       }
     }
@@ -267,13 +248,13 @@ const sketch = (s) => {
       }
     }
 
-    render(fft) {
+    render() {
       s.push();
       s.translate(s.width / 2, s.height / 2);
 
       if (this.isSpeaking && this.waveAmplitude > 5) {
-        // Draw actual audio waveform
-        this.drawSoundWave(fft);
+        // Draw sound wave animation
+        this.drawSoundWave();
       } else {
         // Draw the emoji face
         s.imageMode(s.CENTER);
@@ -283,22 +264,22 @@ const sketch = (s) => {
       s.pop();
     }
 
-    drawSoundWave(fft) {
-      if (!fft) return;
-
-      let waveform = fft.waveform();
-
+    drawSoundWave() {
       s.noFill();
       s.stroke(0);
       s.strokeWeight(4);
 
-      s.beginShape();
-      for (let i = 0; i < waveform.length; i++) {
-        let x = s.map(i, 0, waveform.length, -350, 350);
-        let y = s.map(waveform[i], -1, 1, -200, 200);
-        s.vertex(x, y);
+      // Draw multiple sine waves
+      for (let offset = -80; offset <= 80; offset += 40) {
+        s.beginShape();
+        for (let x = -200; x <= 200; x += 5) {
+          let y =
+            s.sin(x * 0.02 + this.wavePhase + offset * 0.01) *
+            this.waveAmplitude;
+          s.vertex(x, y + offset);
+        }
+        s.endShape();
       }
-      s.endShape();
     }
   }
 
@@ -313,7 +294,7 @@ const sketch = (s) => {
 
       // Start listening
       isListening = true;
-      speakButton.html("Stop Listening (Voice + GGWave)");
+      speakButton.html("Stop Listening");
       speakButton.addClass("listening");
       myRobot.changeFace("happy");
 
@@ -330,7 +311,7 @@ const sketch = (s) => {
       if (recorder.state === "recording") {
         recorder.stop();
       }
-      speakButton.html("Start Listening (Voice + GGWave)");
+      speakButton.html("Start Listening");
       speakButton.removeClass("listening");
       myRobot.changeFace("happy");
     }
@@ -382,113 +363,6 @@ const sketch = (s) => {
     };
 
     speechSynthesis.speak(utterance);
-  }
-
-  // Helper function to convert array types
-  function convertTypedArray(src, type) {
-    const buffer = new ArrayBuffer(src.byteLength);
-    new src.constructor(buffer).set(src);
-    return new type(buffer);
-  }
-
-  async function initGGWave() {
-    try {
-      console.log("Starting GGWave initialization...");
-
-      // Wait for ggwave_factory to be available from CDN script
-      let attempts = 0;
-      while (typeof window.ggwave_factory === "undefined" && attempts < 50) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        attempts++;
-      }
-
-      if (typeof window.ggwave_factory === "undefined") {
-        throw new Error("ggwave_factory not loaded from CDN");
-      }
-
-      // Initialize ggwave using factory pattern
-      const ggwave = await window.ggwave_factory();
-      const parameters = ggwave.getDefaultParameters();
-      parameters.sampleRateInp = audioContext.sampleRate;
-      parameters.sampleRateOut = audioContext.sampleRate;
-      parameters.soundMarkerThreshold = 4;
-
-      ggwaveInstance = {
-        ggwave: ggwave,
-        instance: ggwave.init(parameters),
-      };
-
-      console.log("GGWave initialized", {
-        sampleRate: audioContext.sampleRate,
-        parameters: parameters,
-      });
-
-      // Create ScriptProcessor node for audio processing
-      const scriptNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
-
-      scriptNode.onaudioprocess = (audioProcessingEvent) => {
-        if (!isListening || !ggwaveReady) return;
-
-        const inputBuffer = audioProcessingEvent.inputBuffer;
-        const inputData = inputBuffer.getChannelData(0);
-
-        // Try to decode the audio chunk
-        try {
-          // Convert Float32Array to Int8Array for ggwave
-          const res = ggwaveInstance.ggwave.decode(
-            ggwaveInstance.instance,
-            convertTypedArray(new Float32Array(inputData), Int8Array),
-          );
-
-          if (res && res.length > 0) {
-            handleGGWaveData(res);
-          }
-        } catch (e) {
-          // Silently ignore decode errors (no valid data)
-        }
-      };
-
-      // Connect microphone to script processor
-      if (mic && mic.stream) {
-        const source = audioContext.createMediaStreamSource(mic.stream);
-        source.connect(scriptNode);
-        scriptNode.connect(audioContext.destination);
-      }
-
-      ggwaveReady = true;
-      console.log("✅ GGWave initialized successfully");
-      updateDebugDisplay();
-    } catch (error) {
-      console.error("❌ Failed to initialize GGWave:", error);
-      ggwaveReady = false;
-      updateDebugDisplay();
-    }
-  }
-
-  function handleGGWaveData(decoded) {
-    if (isProcessingGGWave) return;
-
-    try {
-      isProcessingGGWave = true;
-
-      // Convert decoded bytes to text
-      const text = new TextDecoder().decode(new Uint8Array(decoded));
-      console.log("🔊 GGWave decoded:", text);
-
-      debugText.userSpeech = `[GGWave] ${text}`;
-      updateDebugDisplay();
-
-      // Process the decoded message
-      handleUserSpeech(text);
-
-      // Reset after a delay
-      setTimeout(() => {
-        isProcessingGGWave = false;
-      }, 2000);
-    } catch (error) {
-      console.error("Error processing GGWave data:", error);
-      isProcessingGGWave = false;
-    }
   }
 
   async function handleUserSpeech(transcript) {

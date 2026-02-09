@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@vpalmisano/ggwave':
+        specifier: 0.4.3-2
+        version: 0.4.3-2
       axios:
         specifier: ^1.6.0
         version: 1.13.5
@@ -313,6 +316,9 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@vpalmisano/ggwave@0.4.3-2':
+    resolution: {integrity: sha512-VJ9glQjCRDA/Wrx6bmmikpr5JLVb7uWOPVp1ok2IiCy+ET3J8ymIwL5z+KKZVBWvOSePigz+VBXIS6qWeuCjKw==}
 
   accepts@1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
@@ -875,6 +881,8 @@ snapshots:
     optional: true
 
   '@types/estree@1.0.8': {}
+
+  '@vpalmisano/ggwave@0.4.3-2': {}
 
   accepts@1.3.8:
     dependencies:

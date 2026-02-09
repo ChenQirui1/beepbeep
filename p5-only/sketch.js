@@ -389,7 +389,7 @@ async function callOpenAI(text, robotName, personality, context) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${CONFIG.OPEN_AI_API_KEY}`,
+        Authorization: `Bearer ${CONFIG.OPEN_AI_API_KEY}`,
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
@@ -493,7 +493,7 @@ async function robotConversation(
 async function robotSpeaksToHuman(robot, userText, personality) {
   return new Promise(async (resolve) => {
     // Robot faces forward (toward human)
-    robot.setRotation(0);
+    robot.setRotation(-0.3);
     robot.changeFace("speaking");
 
     // Call Claude API
